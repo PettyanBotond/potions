@@ -6,4 +6,11 @@ const users = mysqlTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
 });
 
-module.exports = { users };
+const potions = mysqlTable("potions", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  effect: varchar("effect", { length: 255 }).notNull(),
+  isDangerous: boolean("isDangerous").default(false),
+});
+
+module.exports = { users, potions };
