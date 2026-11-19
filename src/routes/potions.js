@@ -39,7 +39,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const { name, effect, isDangerous } = req.body; //DANGEROUS!⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+        const { name, effect, isDangerous } = req.body;
         if(!name) {
             return res.status(404).json({
                 message: "Nem volt megadva név!",
@@ -98,9 +98,20 @@ router.delete("/:id", async (req, res) => {
     }
 })
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => { 
     try {
-        
+        const { name, effect, isDangerous } = req.body;
+        const [updating] = await db.select().from(potions).where(eq(potions.id, req.params.id));
+        if(!updating) {
+            return res.status(404).json({
+                message: "Nincs ilyen id!",
+            })
+        }
+        await db.update(potions).set({name, effect, isDangerous}).where(eq(potions.id, req.params.id));
+        return res.status(200).json({
+            message: "Sikeres frissítés!",
+        })
+
     }
     catch (err) {
         return res.status(500).json({
@@ -108,8 +119,5 @@ router.put("/:id", async (req, res) => {
         });
     }
 })
-
-
-
 
 module.exports = router;
