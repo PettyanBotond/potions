@@ -43,8 +43,29 @@ router.post("/", async (req, res) => {
             isDangerous: isDangerous,
         })
 
-        return res.status(500).json({
+        return res.status(200).json({
             message: "Bájital sikeresen hozzáadva!",
+        })
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: err.message,
+        })
+    }
+})
+
+router.delete("/", async (req, res) => {
+    try {
+        const findById = await db.select().from(potions).where(eq(res.params.id));
+        if(!findById) {
+            return res.status(400).json({
+                message: "Nincsen megadva az id!",
+            });
+        };
+        await db.delete(potions)
+        .where(eq(potions.id, +req.params.id));
+        return res.status(200).json({
+            message: "Sikeres törlés!",
         })
     }
     catch (err) {
@@ -95,6 +116,7 @@ router.delete("/:id", async (req, res) => {
 
     }
 })
+
 
 
 
