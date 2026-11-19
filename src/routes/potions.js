@@ -6,7 +6,7 @@ const { potions } = require("../db/schema");
 
 const router = express.Router();
 
-router.get("/api/potions", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const allPotions = await db.select().from(potions);
         return res.status(200).json(allPotions);
@@ -17,6 +17,25 @@ router.get("/api/potions", async (req, res) => {
         })
     }
 })
+
+router.get("/:id", async (req, res) => {
+    try {
+        const [entry] = await db.select()
+        .from(potions)
+        .where(eq(potions.id, +req.params.id))
+        if(!entry) {
+            return res.status(404).json({
+                message: "Nem sikerült kiválasztani a bájitalt!",
+            });
+        };
+        return res.status(200).json(entry);
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: error.message,
+        });
+    };
+});
 
 router.post("/", async (req, res) => {
     try {
@@ -54,46 +73,6 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.delete("/", async (req, res) => {
-    try {
-        const findById = await db.select().from(potions).where(eq(res.params.id));
-        if(!findById) {
-            return res.status(400).json({
-                message: "Nincsen megadva az id!",
-            });
-        };
-        await db.delete(potions)
-        .where(eq(potions.id, +req.params.id));
-        return res.status(200).json({
-            message: "Sikeres törlés!",
-        })
-    }
-    catch (err) {
-        return res.status(500).json({
-            message: err.message,
-        })
-    }
-})
-
-router.get("/:id", async (req, res) => {
-    try {
-        const [entry] = await db.select()
-        .from(potions)
-        .where(eq(potions.id, +req.params.id))
-        if(!entry) {
-            return res.status(404).json({
-                message: "Nem sikerült kiválasztani a bájitalt!",
-            });
-        };
-        return res.status(200).json(entry);
-    }
-    catch (err) {
-        return res.status(500).json({
-            message: error.message,
-        });
-    };
-});
-
 router.delete("/:id", async (req, res) => {
     try {
         const [user] = await db
@@ -113,7 +92,20 @@ router.delete("/:id", async (req, res) => {
         })
     }
     catch (err) {
+        return res.status(500).json({
+            message: error.message,
+        });
+    }
+})
 
+router.put("/:id", async (req, res) => {
+    try {
+        
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: error.message,
+        });
     }
 })
 
