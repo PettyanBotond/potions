@@ -1,14 +1,26 @@
 const express = require("express");
 const { eq } = require("drizzle-orm");
-
 const db = require("../db/db");
 const { potions } = require("../db/schema");
+const renderErrorHandler = require("../utilities/renderErrorHandler");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const allPotions = await db.select().from(potions);
+        const { name, effect, isDangerous } = req.query;
+        /*if(isDangerous === "true") {
+            isDangerous = true;
+        }
+        else {
+            isDangerous = false;
+        }*/
+        if(!name || !effect || !isDangerous) {
+            const allPotions = await db.select().from(potions);
+            return res.status(200).json(allPotions);
+        }
+        isDangerous = isDangerous === "true";
+        await db.select().from(potions).where(and(like(potions.name, `%${name}%`), like(potions.effect, `%${effect}%`), like(potions.isDangerous, `%${isDangerous}%`)));
         return res.status(200).json(allPotions);
     }
     catch (err) {
